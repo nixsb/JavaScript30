@@ -68,6 +68,22 @@
       transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
     }
 
+    .hour-hand {
+      width: 35%;
+      left:15%;
+    }
+    .min-hand {
+      width: 45%;
+      left:5%;
+    }
+    .second-hand {
+      background: red;
+      height: 3px;
+    }
+    .fast {
+      transition: all 0s;
+    }
+
   </style>
 
   <script>
@@ -90,10 +106,17 @@
       const minutesDeg = ((minutes / 60) * 360) + 90;
       minutesHand.style.transform = `rotate(${minutesDeg}deg)`;
 
-      //const hourDeg = (hour / 12)
-
+      //old way before es6 template literal
       //secondsHand.style.transform = 'rotate(' + secondsDeg + 'deg)';
-      //es6 template literal
+
+      if(seconds===0) {
+        secondsHand.classList.add('fast');
+      }
+      
+      if(seconds===1){
+        secondsHand.classList.remove('fast');
+      }
+      
       
     }
 
