@@ -8,14 +8,76 @@
 <body>
 
   <form class="search-form">
-    <input type="text" class="search" placeholder="City or State">
+    <input type="text" class="search" placeholder="">
     <ul class="suggestions">
       <li>Filter for a city</li>
       <li>or a state</li>
     </ul>
   </form>
+  <div id="result"></div>
 <script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+    const cities = [];
+    function retreiveJSON() {
+        var xhr = new XMLHttpRequest(); //http request
+        xhr.open("GET", "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json", true);//request to server
+        xhr.onreadystatechange = states;
+        function states() {
+            if(xhr.readyState === 4 && xhr.status === 200) {
+                //convert string to JSON object
+                var response = JSON.parse(xhr.response);
+                //old
+                //cities.push.apply(cities, response);
+                //es6 spread operator
+                cities.push(...response);
+                
+            } else if (xhr.status === 500) {
+                result.innerHTML = 'refresh the browser'; 
+            }
+        }
+        xhr.send(); 
+    }
+    retreiveJSON();
+
+    console.log(cities);
+    function findMatches(wordToFind, cities) {
+      return cities.filter(function(place) {
+        const regex = new RegExp(wordToFind, 'gi');
+        return place.city.match(regex) || place.state.match(regex);
+      }); 
+    };
+
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    
+    function displayMatches() {
+      console.log(this.value);
+      const findMatch = findMatches(this.value, cities);
+      //The map() method creates a new array with the results of calling a provided function on every element in the calling array.
+      const html = findMatch.map(place => {
+        const regex = new RegExp(this.value, 'gi');
+        //string.replace(searchvalue, newvalue)
+      //   const matchCity = place.city.replace(regex, '<span class="hl">' + this.value + '</span>');
+      //   const matchState = place.state.replace(regex, '<span class="hl">' + this.value + '</span>');
+      //   return '<li><span class="name">' + matchCity + ', ' + matchState + '</span><span class="population">' + place.population + '</span></li>';
+      // }).join('');
+
+      //es6 way
+      const matchCity = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+      const matchState = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+        return `<li><span class="name">${matchCity}, ${matchState}</span><span class="population">${numberWithCommas(place.population)}</span></li>`;
+      }).join('');
+      searchOutput.innerHTML = html;
+      //console.log(findMatch);
+    }
+
+    const searchInput = document.querySelector('.search');
+    const searchOutput = document.querySelector('.suggestions');
+
+    searchInput.addEventListener('change', displayMatches);
+    searchInput.addEventListener('keyup', displayMatches);
+
+    //findMatches('Bos', cities);
 
 </script>
   </body>
