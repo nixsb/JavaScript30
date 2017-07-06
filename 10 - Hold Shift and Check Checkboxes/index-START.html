@@ -9,7 +9,7 @@
 
     html {
       font-family: sans-serif;
-      background:#ffc600;
+      //background:#ffc600;
     }
 
     .inbox {
@@ -99,6 +99,37 @@
   </div>
 
 <script>
+  // Check if they had the shift key down
+  // AND check that they are checking it
+
+  const checkboxes = document.querySelectorAll('.inbox input[type="checkbox"');
+  let lastChecked;
+
+
+  function checkedInput(e){
+    let inBetween = false;
+    if (e.shiftKey && this.checked) {
+      //console.log('this has been checked');
+      checkboxes.forEach(checkbox => {
+        console.log(checkbox);
+        if(checkbox === this || checkbox === lastChecked) {
+          inBetween = !inBetween;
+          console.log('this is last');
+        }
+        if(inBetween) {
+          checkbox.checked = true;
+        }
+
+      });
+    } 
+    lastChecked = this;
+  }
+
+  checkboxes.forEach(function(checkbox) {
+    checkbox.addEventListener('click', checkedInput);
+  });
+  
+  
 </script>
 </body>
 </html>
